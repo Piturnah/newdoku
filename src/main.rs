@@ -190,6 +190,14 @@ fn main() {
             cursor::Down(13)
         );
     } else {
-        println!("No solution found");
+        println!(
+            "{}{}{}    No solution found{}{}{}",
+            cursor::Up(1),
+            clear::CurrentLine,
+            color::Fg(color::LightRed),
+            style::Reset,
+            cursor::Down(13),
+            cursor::Show
+        );
     }
 }
