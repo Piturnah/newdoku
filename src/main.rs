@@ -1,6 +1,7 @@
-use std::fmt;
+use std::{time::Duration, thread, fmt};
+use termion::cursor;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct Sudoku {
     xs: [Option<u32>; 81],
 }
@@ -59,8 +60,42 @@ impl Sudoku {
         Ok(Self { xs })
     }
 
+    fn is_full(&self) -> bool {
+	for x in self.xs {
+	    if x.is_none() {
+		return false;
+	    }
+	}
+	true
+    }
+
     fn solution(&self) -> Option<Self> {
-        todo!();
+	print!("{}", cursor::Hide);
+
+	if self.is_full() {
+	    print!("{}", cursor::Show);
+	    return Some(self.clone())
+	}
+
+	for i in 0..9 {
+	    for j in 0..9 {
+		if self.xs[i * 9 + j].is_none() {
+		    for x in 1..10 {
+			if let Ok(sudoku)= self.try_insert((j, i), x) {
+			    println!("{}{}", sudoku, cursor::Up(13));
+			    thread::sleep(Duration::from_millis(25));
+			    if let Some(sudoku) = sudoku.solution() {
+				return Some(sudoku);
+			    }
+			}
+		    }
+		    return None
+		}
+	    }
+	}
+
+	print!("{}", cursor::Show);
+	None
     }
 }
 
