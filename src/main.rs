@@ -1,5 +1,17 @@
+use clap::Parser;
 use std::{fmt, thread, time::Duration};
 use termion::{clear, color, cursor, style};
+
+#[derive(Parser, Debug)]
+struct Config {
+    /// Wait STEP millis between inserts
+    #[clap(short, long, default_value_t = 0)]
+    step: u64,
+
+    /// No output until finished solving (faster)
+    #[clap(short, long)]
+    quiet: bool,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SudokuNum {
@@ -89,7 +101,7 @@ impl Sudoku {
         true
     }
 
-    fn solution(&self) -> Option<Self> {
+    fn solution(&self, config: &Config) -> Option<Self> {
         print!("{}", cursor::Hide);
 
         if self.is_full() {
@@ -102,9 +114,14 @@ impl Sudoku {
                 if self.xs[i * 9 + j].is_none() {
                     for x in 1..10 {
                         if let Ok(sudoku) = self.try_insert((j, i), x) {
-                            println!("{}{}", sudoku, cursor::Up(13));
-                            thread::sleep(Duration::from_millis(25));
-                            if let Some(sudoku) = sudoku.solution() {
+                            if !config.quiet {
+                                println!("{}{}", sudoku, cursor::Up(13));
+                            }
+                            if config.step > 0 {
+                                thread::sleep(Duration::from_millis(config.step));
+                            }
+
+                            if let Some(sudoku) = sudoku.solution(&config) {
                                 return Some(sudoku);
                             }
                         }
@@ -161,25 +178,19 @@ impl fmt::Display for Sudoku {
 }
 
 fn main() {
+    let config = Config::parse();
+
     let sudoku = Sudoku::from_str(
-        "
-.97182.34
-.32...8..
-.6149.257
-7.834....
-..4...5..
-9..2.6.7.
-2...6....
-...8.49.5
-..9....46",
+        "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
     );
+
     println!(
         "{}\n{}        Solving...{}",
         sudoku,
         color::Fg(color::LightRed),
         style::Reset
     );
-    if let Some(sudoku) = sudoku.solution() {
+    if let Some(sudoku) = sudoku.solution(&config) {
         println!(
             "{}\n{}{}{}          Done!{}{}",
             sudoku,
