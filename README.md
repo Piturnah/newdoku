@@ -39,3 +39,7 @@ Gives
 | . . 9 | 6 1 3 | . . . |
 +-------+-------+-------+
 ```
+
+## Contributing
+
+PRs and issues welcome.
