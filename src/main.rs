@@ -1,30 +1,47 @@
 use std::{fmt, thread, time::Duration};
-use termion::cursor;
+use termion::{clear, color, cursor, style};
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum SudokuNum {
+    Original(u32),
+    Edited(u32),
+}
+
+impl fmt::Display for SudokuNum {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        match self {
+            Self::Original(num) => write!(f, "{}", num),
+            Self::Edited(num) => write!(f, "{}", num),
+        }
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 struct Sudoku {
-    xs: [Option<u32>; 81],
+    xs: [Option<SudokuNum>; 81],
 }
 
 impl Sudoku {
     fn from_str(src: &str) -> Self {
-        let xs: [Option<u32>; 81] = src
+        use SudokuNum::*;
+        let xs: [Option<SudokuNum>; 81] = src
             .chars()
             .filter(|&x| x != '\n')
             .map(|x| {
                 if let Ok(num) = x.to_string().parse::<u32>() {
-                    Some(num)
+                    Some(Original(num))
                 } else {
                     None
                 }
             })
-            .collect::<Vec<Option<u32>>>()
+            .collect::<Vec<Option<SudokuNum>>>()
             .try_into()
             .unwrap();
         Self { xs }
     }
 
     fn try_insert(&self, loc: (usize, usize), num: u32) -> Result<Self, &str> {
+        use SudokuNum::*;
         assert!(loc.0 < 9, "x coord out of range in Sudoku.try_insert");
         assert!(loc.1 < 9, "y coord out of range in Sudoku.try_insert");
         assert!(num <= 9, "Inserted number must be in sudoku range (0-9)");
@@ -32,10 +49,12 @@ impl Sudoku {
         let mut xs = self.xs.clone();
 
         for x in 0..9 {
-            if xs[loc.1 * 9 + x] == Some(num) {
+            if (xs[loc.1 * 9 + x] == Some(Original(num))) | (xs[loc.1 * 9 + x] == Some(Edited(num)))
+            {
                 return Err("Duplicate instance already in row");
             }
-            if xs[x * 9 + loc.0] == Some(num) {
+            if (xs[x * 9 + loc.0] == Some(Original(num))) | (xs[x * 9 + loc.0] == Some(Edited(num)))
+            {
                 return Err("Duplicate instance already in col");
             }
         }
@@ -50,13 +69,14 @@ impl Sudoku {
         let center = (rel_center(loc.0), rel_center(loc.1));
         for i in -1..2 {
             for j in -1..2 {
-                if xs[((center.1 as isize + j) * 9 + center.0 as isize + i) as usize] == Some(num) {
+                let x = xs[((center.1 as isize + j) * 9 + center.0 as isize + i) as usize];
+                if (x == Some(Original(num))) | (x == Some(Edited(num))) {
                     return Err("Duplicate instance already in block");
                 }
             }
         }
 
-        xs[loc.1 * 9 + loc.0] = Some(num);
+        xs[loc.1 * 9 + loc.0] = Some(Edited(num));
         Ok(Self { xs })
     }
 
@@ -101,6 +121,7 @@ impl Sudoku {
 
 impl fmt::Display for Sudoku {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        use SudokuNum::*;
         let mut xs = self.xs.iter();
         for row in 0..13 {
             match row {
@@ -119,7 +140,12 @@ impl fmt::Display for Sudoku {
                             }
                             _ => {
                                 if let Some(num) = xs.next().unwrap() {
-                                    write!(f, "{} ", num)?;
+                                    match num {
+                                        Original(num) => {
+                                            write!(f, "{}{}{} ", style::Bold, num, style::Reset)?
+                                        }
+                                        Edited(num) => write!(f, "{} ", num)?,
+                                    }
                                 } else {
                                     write!(f, ". ")?;
                                 }
@@ -147,9 +173,22 @@ fn main() {
 ...8.49.5
 ..9....46",
     );
-    println!("{}", sudoku);
+    println!(
+        "{}\n{}        Solving...{}",
+        sudoku,
+        color::Fg(color::LightRed),
+        style::Reset
+    );
     if let Some(sudoku) = sudoku.solution() {
-        println!("{}", sudoku);
+        println!(
+            "{}\n{}{}{}          Done!{}{}",
+            sudoku,
+            cursor::Up(14),
+            clear::CurrentLine,
+            color::Fg(color::LightGreen),
+            style::Reset,
+            cursor::Down(13)
+        );
     } else {
         println!("No solution found");
     }
