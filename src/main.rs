@@ -1,5 +1,5 @@
 use clap::Parser;
-use std::{fmt, thread, time::Duration};
+use std::{fmt, fs, thread, time::Duration};
 use termion::{clear, color, cursor, style};
 
 #[derive(Parser, Debug)]
@@ -11,6 +11,10 @@ struct Config {
     /// No output until finished solving (faster)
     #[clap(short, long)]
     quiet: bool,
+
+    /// Load Sudoku from file
+    #[clap(short, long)]
+    file: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -180,9 +184,12 @@ impl fmt::Display for Sudoku {
 fn main() {
     let config = Config::parse();
 
-    let sudoku = Sudoku::from_str(
-        "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
-    );
+    let sudoku = match &config.file {
+        Some(file) => Sudoku::from_str(&fs::read_to_string(file).unwrap()),
+        _ => Sudoku::from_str(
+            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+        ),
+    };
 
     println!(
         "{}\n{}        Solving...{}",
