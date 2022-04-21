@@ -4,7 +4,7 @@ Simple Sudoku solver written in Rust. Method is inspired by a method briefly out
 
 It is called Newdoku because I started doing this a while ago and forgot about it and decided to restart, hence "New"
 
-# Quick Start
+## Quick Start
 
 ```console
 $ cargo run
