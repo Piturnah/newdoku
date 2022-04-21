@@ -50,7 +50,7 @@ impl Sudoku {
         for i in -1..2 {
             for j in -1..2 {
                 if xs[((center.1 as isize + j) * 9 + center.0 as isize + i) as usize] == Some(num) {
-		    return Err("Duplicate instance already in block");
+                    return Err("Duplicate instance already in block");
                 }
             }
         }
@@ -60,12 +60,12 @@ impl Sudoku {
     }
 
     fn solution(&self) -> Option<Self> {
-	todo!();
+        todo!();
     }
 }
 
 impl fmt::Display for Sudoku {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), std::fmt::Error> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         let mut xs = self.xs.iter();
         for row in 0..13 {
             match row {
@@ -84,7 +84,7 @@ impl fmt::Display for Sudoku {
                             }
                             _ => {
                                 if let Some(num) = xs.next().unwrap() {
-                                    write!(f, "{} ", &num.to_string())?;
+                                    write!(f, "{} ", num)?;
                                 } else {
                                     write!(f, ". ")?;
                                 }
@@ -114,8 +114,8 @@ fn main() {
     );
     println!("{}", sudoku);
     if let Some(sudoku) = sudoku.solution() {
-	println!("{}", sudoku);
+        println!("{}", sudoku);
     } else {
-	println!("No solution found");
+        println!("No solution found");
     }
 }
