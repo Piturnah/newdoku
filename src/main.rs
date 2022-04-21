@@ -1,4 +1,4 @@
-use std::{time::Duration, thread, fmt};
+use std::{fmt, thread, time::Duration};
 use termion::cursor;
 
 #[derive(Debug, Clone, Copy)]
@@ -61,41 +61,41 @@ impl Sudoku {
     }
 
     fn is_full(&self) -> bool {
-	for x in self.xs {
-	    if x.is_none() {
-		return false;
-	    }
-	}
-	true
+        for x in self.xs {
+            if x.is_none() {
+                return false;
+            }
+        }
+        true
     }
 
     fn solution(&self) -> Option<Self> {
-	print!("{}", cursor::Hide);
+        print!("{}", cursor::Hide);
 
-	if self.is_full() {
-	    print!("{}", cursor::Show);
-	    return Some(self.clone())
-	}
+        if self.is_full() {
+            print!("{}", cursor::Show);
+            return Some(self.clone());
+        }
 
-	for i in 0..9 {
-	    for j in 0..9 {
-		if self.xs[i * 9 + j].is_none() {
-		    for x in 1..10 {
-			if let Ok(sudoku)= self.try_insert((j, i), x) {
-			    println!("{}{}", sudoku, cursor::Up(13));
-			    thread::sleep(Duration::from_millis(25));
-			    if let Some(sudoku) = sudoku.solution() {
-				return Some(sudoku);
-			    }
-			}
-		    }
-		    return None
-		}
-	    }
-	}
+        for i in 0..9 {
+            for j in 0..9 {
+                if self.xs[i * 9 + j].is_none() {
+                    for x in 1..10 {
+                        if let Ok(sudoku) = self.try_insert((j, i), x) {
+                            println!("{}{}", sudoku, cursor::Up(13));
+                            thread::sleep(Duration::from_millis(25));
+                            if let Some(sudoku) = sudoku.solution() {
+                                return Some(sudoku);
+                            }
+                        }
+                    }
+                    return None;
+                }
+            }
+        }
 
-	print!("{}", cursor::Show);
-	None
+        print!("{}", cursor::Show);
+        None
     }
 }
 
