@@ -110,7 +110,7 @@ impl Sudoku {
 
         if self.is_full() {
             print!("{}", cursor::Show);
-            return Some(self.clone());
+            return Some(*self);
         }
 
         for i in 0..9 {
