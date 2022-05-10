@@ -6,6 +6,8 @@ It is called Newdoku because I started doing this a while ago and forgot about i
 
 ## Quick Start
 
+Currently works only in ANSI terminals.
+
 ```console
 $ cargo run
 ```
