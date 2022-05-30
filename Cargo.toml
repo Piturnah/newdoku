@@ -2,6 +2,12 @@
 name = "newdoku"
 version = "0.1.0"
 edition = "2021"
+description = "A small library for displaying and solving Sudokus in ANSI-compliant terminals."
+license = "MIT"
+keywords = ["sudoku", "games", "fun"]
+categories = ["command-line-utilities", "games"]
+readme = "README.md"
+repository = "https://github.com/Piturnah/newdoku/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
