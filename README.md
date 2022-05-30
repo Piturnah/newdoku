@@ -1,6 +1,6 @@
-# Newdoku
+# Newdoku | ![](https://img.shields.io/crates/v/newdoku)
 
-![Demo](https://github.com/Piturnah/newdoku/blob/master/demo.gif)
+![](https://github.com/Piturnah/newdoku/blob/master/demo.gif)
 
 Simple Sudoku solver written in Rust. Method is inspired by a method briefly outlined in a CS lecture I had that I decided to try and implement based only on my understanding from the lecture.
 
