@@ -20,6 +20,7 @@ OPTIONS:
     -h, --help           Print help information
     -q, --quiet          No output until finished solving (faster)
     -s, --step <STEP>    Wait STEP millis between inserts [default: 0]
+    -u, --uid <UID>      Load Sudoku by unique ID
 ```
 
 When loading from a file, the parser parses any digit as a number in the sudoku. Any other character other than a newline will be parsed as an empty square.
