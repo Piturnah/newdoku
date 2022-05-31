@@ -1,4 +1,4 @@
-# Newdoku | ![](https://img.shields.io/crates/v/newdoku)
+# Newdoku | [![](https://img.shields.io/crates/v/newdoku)](https://crates.io/crates/newdoku)
 
 ![](https://github.com/Piturnah/newdoku/blob/master/demo.gif)
 
