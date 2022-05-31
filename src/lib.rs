@@ -1,10 +1,40 @@
+//! Utilities for displaying Sudokus and solving them in ANSI-compliant terminals.
+//!
+//! # Quick Start
+//!
+//! Print the solution to a Sudoku in terminal:
+//!
+//! ```
+//! let s = Sudoku::from_str(
+//!     "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+//! );
+//!
+//! println!("{}\n\n{}", s, s.solution(0, false).unwrap());
+//! ```
+
 use std::{fmt, thread, time::Duration};
 use termion::{cursor, style};
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 enum SudokuNum {
     Original(u32),
     Edited(u32),
+}
+
+impl PartialEq for SudokuNum {
+    fn eq(&self, rhs: &Self) -> bool {
+        use SudokuNum::*;
+        let x = match self {
+            Original(x) => x,
+            Edited(x) => x,
+        };
+        let y = match rhs {
+            Original(y) => y,
+            Edited(y) => y,
+        };
+
+        x == y
+    }
 }
 
 impl fmt::Display for SudokuNum {
@@ -16,12 +46,22 @@ impl fmt::Display for SudokuNum {
     }
 }
 
+/// Contains an 81-size array of [`Option<u32>`].
 #[derive(Debug, Clone, Copy)]
 pub struct Sudoku {
     xs: [Option<SudokuNum>; 81],
 }
 
 impl Sudoku {
+    /// Returns a [`Sudoku`] from a given `src: &str`. Digits are parsed as a number in the sudoku while anything else is a blank space. Newlines are ignored.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// Sudoku::from_str(
+    ///     "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx"
+    /// );
+    /// ```
     pub fn from_str(src: &str) -> Self {
         use SudokuNum::*;
         let xs: [Option<SudokuNum>; 81] = src
@@ -89,6 +129,21 @@ impl Sudoku {
         true
     }
 
+    /// Returns the solved [`Sudoku`] if it exists. If `quiet` set to false, then prints each iteration while solving.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let s = Sudoku::from_str(
+    ///     "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+    /// );
+    /// assert_eq!(
+    ///     s.solution(0, true).unwrap(),
+    ///     Sudoku::from_str(
+    ///         "157832496396745218284196753415378962763429185928561374831257649672984531549613827"
+    ///     )
+    /// );
+    /// ```
     pub fn solution(&self, step: u64, quiet: bool) -> Option<Self> {
         print!("{}", cursor::Hide);
 
@@ -121,6 +176,18 @@ impl Sudoku {
 
         print!("{}", cursor::Show);
         None
+    }
+}
+
+impl PartialEq for Sudoku {
+    fn eq(&self, rhs: &Self) -> bool {
+        let mut rhs = rhs.xs.into_iter();
+        for x in self.xs {
+            if x != rhs.next().unwrap() {
+                return false;
+            }
+        }
+        true
     }
 }
 
