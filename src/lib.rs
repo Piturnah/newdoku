@@ -231,3 +231,47 @@ impl fmt::Display for Sudoku {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn par_eq_sudokunum() {
+        assert_eq!(SudokuNum::Original(5), SudokuNum::Edited(5));
+    }
+
+    #[test]
+    fn par_eq_sudoku() {
+        let s1 = Sudoku::from_str(
+            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+        );
+        let s2 = Sudoku::from_str(
+            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+        );
+
+        assert_eq!(s1, s2);
+    }
+
+    #[test]
+    fn solve() {
+        let s = Sudoku::from_str(
+            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+        );
+        assert_eq!(
+            s.solution(0, true).unwrap(),
+            Sudoku::from_str(
+                "157832496396745218284196753415378962763429185928561374831257649672984531549613827"
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn solve_invalid() {
+        let s = Sudoku::from_str(
+            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xx5",
+        );
+        s.solution(0, true).unwrap();
+    }
+}
