@@ -5,6 +5,8 @@
 //! Print the solution to a Sudoku in terminal:
 //!
 //! ```
+//! use newdoku::Sudoku;
+//!
 //! let s = Sudoku::from_str(
 //!     "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
 //! );
@@ -58,6 +60,8 @@ impl Sudoku {
     /// # Examples
     ///
     /// ```
+    /// use newdoku::Sudoku;
+    ///
     /// Sudoku::from_str(
     ///     "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx"
     /// );
@@ -80,7 +84,8 @@ impl Sudoku {
         Self { xs }
     }
 
-    fn try_insert(&self, loc: (usize, usize), num: u32) -> Result<Self, &str> {
+    /// Returns a [`Sudoku`] that is the same as `self` but with `num` inserted at `loc: (x, y)` (0-indexed) if it can be inserted there by sudoku rules.
+    pub fn try_insert(&self, loc: (usize, usize), num: u32) -> Result<Self, &str> {
         use SudokuNum::*;
         assert!(loc.0 < 9, "x coord out of range in Sudoku.try_insert");
         assert!(loc.1 < 9, "y coord out of range in Sudoku.try_insert");
@@ -120,7 +125,8 @@ impl Sudoku {
         Ok(Self { xs })
     }
 
-    fn is_full(&self) -> bool {
+    /// Returns true if `self` has no empty spaces.
+    pub fn is_full(&self) -> bool {
         for x in self.xs {
             if x.is_none() {
                 return false;
@@ -134,6 +140,8 @@ impl Sudoku {
     /// # Examples
     ///
     /// ```
+    /// use newdoku::Sudoku;
+    ///
     /// let s = Sudoku::from_str(
     ///     "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
     /// );
@@ -235,6 +243,10 @@ impl fmt::Display for Sudoku {
 #[cfg(test)]
 mod test {
     use super::*;
+    const TEST_SUDOKU: &str =
+        "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx";
+    const SOLVED_SUDOKU: &str =
+        "157832496396745218284196753415378962763429185928561374831257649672984531549613827";
 
     #[test]
     fn par_eq_sudokunum() {
@@ -243,26 +255,18 @@ mod test {
 
     #[test]
     fn par_eq_sudoku() {
-        let s1 = Sudoku::from_str(
-            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
-        );
-        let s2 = Sudoku::from_str(
-            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
-        );
+        let s1 = Sudoku::from_str(TEST_SUDOKU);
+        let s2 = Sudoku::from_str(TEST_SUDOKU);
 
         assert_eq!(s1, s2);
     }
 
     #[test]
     fn solve() {
-        let s = Sudoku::from_str(
-            "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
-        );
+        let s = Sudoku::from_str(TEST_SUDOKU);
         assert_eq!(
             s.solution(0, true).unwrap(),
-            Sudoku::from_str(
-                "157832496396745218284196753415378962763429185928561374831257649672984531549613827"
-            )
+            Sudoku::from_str(SOLVED_SUDOKU)
         );
     }
 
@@ -273,5 +277,51 @@ mod test {
             "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xx5",
         );
         s.solution(0, true).unwrap();
+    }
+
+    #[test]
+    fn try_insert() {
+        let s1 = Sudoku::from_str(TEST_SUDOKU).try_insert((3, 2), 5).unwrap();
+        let s2 = Sudoku::from_str(
+            "xxxxxxx9xx9x7xx21xxx459xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+        );
+        assert_eq!(s1, s2);
+    }
+
+    #[test]
+    fn try_insert_row() {
+        let s1 = Sudoku::from_str(TEST_SUDOKU);
+        assert_eq!(
+            s1.try_insert((5, 6), 4),
+            Err("Duplicate instance already in row")
+        );
+    }
+
+    #[test]
+    fn try_insert_col() {
+        let s1 = Sudoku::from_str(TEST_SUDOKU);
+        assert_eq!(
+            s1.try_insert((5, 7), 8),
+            Err("Duplicate instance already in col")
+        );
+    }
+
+    #[test]
+    fn try_insert_block() {
+        let s1 = Sudoku::from_str(TEST_SUDOKU);
+        assert_eq!(
+            s1.try_insert((5, 6), 6),
+            Err("Duplicate instance already in block")
+        );
+    }
+
+    #[test]
+    fn is_full() {
+        assert_eq!(Sudoku::from_str(SOLVED_SUDOKU).is_full(), true);
+    }
+
+    #[test]
+    fn isnt_full() {
+        assert_eq!(Sudoku::from_str(TEST_SUDOKU).is_full(), false);
     }
 }
