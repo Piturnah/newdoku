@@ -10,9 +10,40 @@ It is called Newdoku because I started doing this a while ago and forgot about i
 
 Currently works only in ANSI terminals.
 
+### Library
+
+```rust
+use newdoku::Sudoku;
+
+fn main() {
+    let s = Sudoku::from_str(
+        "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
+    );
+
+    println!("{}\n\n{}", s, s.solution(0, false).unwrap());
+}
+```
+
+See the [docs](https://docs.rs/newdoku/latest/newdoku/) for more info.
+
+### Binary
+
+#### From source
+
 ```console
+$ git clone https://github.com/Piturnah/newdoku
+$ cd newdoku
 $ cargo run
 ```
+
+#### From crates.io
+
+```console
+$ cargo install newdoku
+$ newdoku
+```
+
+#### Options
 
 ```console
 OPTIONS:
@@ -29,6 +60,7 @@ Example sudoku:
 `xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx`
 
 Gives
+
 ```console
 +-------+-------+-------+
 | . . . | . . . | . 9 . |
