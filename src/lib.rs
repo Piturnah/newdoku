@@ -108,7 +108,7 @@ impl Sudoku {
             0 => origin + 1,
             1 => origin,
             2 => origin - 1,
-            _ => panic!("Unreachable"),
+            _ => unreachable!(),
         };
 
         let center = (rel_center(loc.0), rel_center(loc.1));
