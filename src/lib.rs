@@ -104,14 +104,9 @@ impl Sudoku {
             }
         }
 
-        let rel_center = |origin: usize| match origin % 3 {
-            0 => origin + 1,
-            1 => origin,
-            2 => origin - 1,
-            _ => unreachable!(),
-        };
-
+        let rel_center = |origin| origin + 1 - origin % 3;
         let center = (rel_center(loc.0), rel_center(loc.1));
+
         for i in -1..2 {
             for j in -1..2 {
                 let x = xs[((center.1 as isize + j) * 9 + center.0 as isize + i) as usize];
@@ -241,6 +236,7 @@ impl fmt::Display for Sudoku {
 }
 
 #[cfg(test)]
+
 mod test {
     use super::*;
     const TEST_SUDOKU: &str =
