@@ -236,7 +236,6 @@ impl fmt::Display for Sudoku {
 }
 
 #[cfg(test)]
-
 mod test {
     use super::*;
     const TEST_SUDOKU: &str =
