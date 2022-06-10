@@ -19,8 +19,8 @@ use termion::{cursor, style};
 
 #[derive(Debug, Clone, Copy)]
 enum SudokuNum {
-    Original(u32),
-    Edited(u32),
+    Original(u8),
+    Edited(u8),
 }
 
 impl PartialEq for SudokuNum {
@@ -48,7 +48,7 @@ impl fmt::Display for SudokuNum {
     }
 }
 
-/// Contains an 81-size array of [`Option<u32>`].
+/// Contains an 81-size array of [`Option<u8>`].
 #[derive(Debug, Clone, Copy)]
 pub struct Sudoku {
     xs: [Option<SudokuNum>; 81],
@@ -72,7 +72,7 @@ impl Sudoku {
             .chars()
             .filter(|&x| x != '\n')
             .map(|x| {
-                if let Ok(num) = x.to_string().parse::<u32>() {
+                if let Ok(num) = x.to_string().parse::<u8>() {
                     Some(Original(num))
                 } else {
                     None
@@ -85,7 +85,7 @@ impl Sudoku {
     }
 
     /// Returns a [`Sudoku`] that is the same as `self` but with `num` inserted at `loc: (x, y)` (0-indexed) if it can be inserted there by sudoku rules.
-    pub fn try_insert(&self, loc: (usize, usize), num: u32) -> Result<Self, &str> {
+    pub fn try_insert(&self, loc: (usize, usize), num: u8) -> Result<Self, &str> {
         use SudokuNum::*;
         assert!(loc.0 < 9, "x coord out of range in Sudoku.try_insert");
         assert!(loc.1 < 9, "y coord out of range in Sudoku.try_insert");
