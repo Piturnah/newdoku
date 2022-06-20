@@ -14,8 +14,8 @@
 //! println!("{}\n\n{}", s, s.solution(0, false).unwrap());
 //! ```
 
+use crossterm::{cursor, style::Attribute};
 use std::{fmt, thread, time::Duration};
-use termion::{cursor, style};
 
 #[derive(Debug, Clone, Copy)]
 enum SudokuNum {
@@ -161,7 +161,7 @@ impl Sudoku {
                     for x in 1..10 {
                         if let Ok(sudoku) = self.try_insert((j, i), x) {
                             if !quiet {
-                                println!("{}\n\n{}", sudoku, cursor::Up(15));
+                                println!("{}\n\n{}", sudoku, cursor::MoveUp(15));
                             }
                             if step > 0 {
                                 thread::sleep(Duration::from_millis(step));
@@ -216,9 +216,13 @@ impl fmt::Display for Sudoku {
                             _ => {
                                 if let Some(num) = xs.next().unwrap() {
                                     match num {
-                                        Original(num) => {
-                                            write!(f, "{}{}{} ", style::Bold, num, style::Reset)?
-                                        }
+                                        Original(num) => write!(
+                                            f,
+                                            "{}{}{} ",
+                                            Attribute::Bold,
+                                            num,
+                                            Attribute::Reset
+                                        )?,
                                         Edited(num) => write!(f, "{} ", num)?,
                                     }
                                 } else {

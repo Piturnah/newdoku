@@ -1,7 +1,11 @@
 use clap::Parser;
+use crossterm::{
+    cursor,
+    style::{Attribute, Color, SetForegroundColor},
+    terminal::{Clear, ClearType::CurrentLine},
+};
 use newdoku::Sudoku;
 use std::fs;
-use termion::{clear, color, cursor, style};
 
 #[derive(Parser, Debug)]
 struct Config {
@@ -38,27 +42,27 @@ fn main() {
     println!(
         "{}\n{}        Solving...{}",
         sudoku,
-        color::Fg(color::LightRed),
-        style::Reset
+        SetForegroundColor(Color::Red),
+        Attribute::Reset
     );
     if let Some(sudoku) = sudoku.solution(config.step, config.quiet) {
         println!(
             "{}\n{}{}{}          Done!{}{}",
             sudoku,
-            cursor::Up(14),
-            clear::CurrentLine,
-            color::Fg(color::LightGreen),
-            style::Reset,
-            cursor::Down(13)
+            cursor::MoveUp(14),
+            Clear(CurrentLine),
+            SetForegroundColor(Color::Green),
+            Attribute::Reset,
+            cursor::MoveDown(13)
         );
     } else {
         println!(
             "{}{}{}    No solution found{}{}{}",
-            cursor::Up(1),
-            clear::CurrentLine,
-            color::Fg(color::LightRed),
-            style::Reset,
-            cursor::Down(13),
+            cursor::MoveUp(1),
+            Clear(CurrentLine),
+            SetForegroundColor(Color::Red),
+            Attribute::Reset,
+            cursor::MoveDown(13),
             cursor::Show
         );
     }
