@@ -14,6 +14,9 @@
 //! println!("{}\n\n{}", s, s.solution(0, false).unwrap());
 //! ```
 
+#[cfg(feature = "clap")]
+pub use clap;
+
 use crossterm::{cursor, style::Attribute};
 use std::{fmt, thread, time::Duration};
 

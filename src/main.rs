@@ -1,10 +1,9 @@
-use clap::Parser;
 use crossterm::{
     cursor,
     style::{Attribute, Color, SetForegroundColor},
     terminal::{Clear, ClearType::CurrentLine},
 };
-use newdoku::Sudoku;
+use newdoku::{clap::Parser, Sudoku};
 use std::fs;
 
 #[derive(Parser, Debug)]

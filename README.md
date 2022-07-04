@@ -10,6 +10,11 @@ It is called Newdoku because I started doing this a while ago and forgot about i
 
 ### Library
 
+```toml
+[dependencies]
+newdoku = { version = "0.6", default-features = false }
+```
+
 ```rust
 use newdoku::Sudoku;
 
