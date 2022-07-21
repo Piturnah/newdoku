@@ -21,7 +21,8 @@ use newdoku::Sudoku;
 fn main() {
     let s = Sudoku::from_str(
         "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
-    );
+    )
+    .unwrap();
 
     println!("{}\n\n{}", s, s.solution(0, false).unwrap());
 }

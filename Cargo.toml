@@ -1,6 +1,6 @@
 [package]
 name = "newdoku"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2021"
 description = "A small library for displaying and solving Sudokus in ANSI-compliant terminals."
 license = "MIT"
