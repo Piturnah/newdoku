@@ -4,7 +4,7 @@ use crossterm::{
     terminal::{Clear, ClearType::CurrentLine},
 };
 use newdoku::{clap::Parser, Sudoku};
-use std::fs;
+use std::{fs, process, str::FromStr};
 
 #[derive(Parser, Debug)]
 struct Config {
@@ -29,14 +29,21 @@ fn main() {
     let config = Config::parse();
 
     let sudoku = match &config.file {
-        Some(file) => Sudoku::from_str(&fs::read_to_string(file).unwrap()),
+        Some(file) => Sudoku::from_str(&fs::read_to_string(file).unwrap_or_else(|e| {
+            eprintln!("Could not read file `{}`: {}", file, e);
+            process::exit(1);
+        })),
         _ => match &config.uid {
             Some(uid) => Sudoku::from_str(uid),
             _ => Sudoku::from_str(
                 "xxxxxxx9xx9x7xx21xxx4x9xxxxx1xxx8xxx7xx42xxx5xx8xxxx748x1xxxx4xxxxxxxxxxxx9613xxx",
             ),
         },
-    };
+    }
+    .unwrap_or_else(|e| {
+        eprintln!("Could not parse sudoku: {}", e);
+        process::exit(1);
+    });
 
     println!(
         "{}\n{}        Solving...{}",
